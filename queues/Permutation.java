@@ -5,8 +5,10 @@
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
 public class Permutation {
+
     public static void main(String[] args) {
         RandomizedQueue<String> que = new RandomizedQueue<>();
         int k = Integer.parseInt(args[0]);
@@ -14,7 +16,7 @@ public class Permutation {
             que.enqueue(StdIn.readString());
         }
         for (int i = 0; i < k; i++) {
-            System.out.println(que.dequeue());
+            StdOut.println(que.dequeue());
         }
     }
 }

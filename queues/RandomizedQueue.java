@@ -11,138 +11,132 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
-    private int size;
-    private Item[] resizingArray;
+    private Item[] data;
+    private int head;
 
-    public RandomizedQueue() { // construct an empty randomized queue
-        this.resizingArray = (Item[]) new Object[1];
-        this.size = 0;
+    /**
+     * Construct an empty randomized <code>RandomizedQueue</code>.
+     */
+    public RandomizedQueue() {
+        data = (Item[]) new Object[1];
     }
 
-    public void enqueue(Item item) { // add the item
-        if (item == null) {
-            throw new IllegalArgumentException("Null Argument!");
-        }
-
-        if (this.size == this.resizingArray.length) resize(2 * this.resizingArray.length);
-        this.resizingArray[this.size++] = item;
+    /**
+     * Returns <tt>true</tt> if this <code>RandomizedQueue</code> contains no elements.
+     *
+     * @return <tt>true</tt> if this <code>RandomizedQueue</code> contains no elements.
+     */
+    public boolean isEmpty() {
+        return head == 0;
     }
 
-    public Item dequeue() { // remove and return a random item
-        if (this.size == 0) { // empty array
-            throw new NoSuchElementException("Empty RandomizedQueue!");
-        }
-
-        int randomIndex = StdRandom.uniformInt(this.size);
-        Item toReturn = this.resizingArray[randomIndex];
-
-        // Shift elements to the left starting from randomIndex+1
-        for (int i = randomIndex + 1; i < this.size; i++) {
-            this.resizingArray[i - 1] = this.resizingArray[i];
-        }
-
-        // Set the last element to null to avoid memory leak (if applicable)
-        this.resizingArray[this.size - 1] = null;
-
-        // 25% full or 100% full
-        if (--this.size > 0 && this.size == this.resizingArray.length / 4) {
-            this.resize(this.resizingArray.length / 2);
-        }
-        return toReturn;
+    /**
+     * Returns the number of elements in this <code>RandomizedQueue</code>.
+     *
+     * @return the number of elements in this <code>RandomizedQueue</code>.
+     */
+    public int size() {
+        return head;
     }
 
-    public Item sample() { // return a random item (but do not remove it)
-        if (this.size == 0) { // empty array
-            throw new NoSuchElementException("Empty RandomizedQueue!");
+    /**
+     * Add item at first position.
+     *
+     * @param item the element to add.
+     * @throws IllegalArgumentException if argument is null.
+     */
+    public void enqueue(Item item) {
+        if (item == null) throw new IllegalArgumentException("Argument is null!");
+        if (head == data.length) resize(data.length * 2);
+        data[head++] = item;
+    }
+
+    /**
+     * Remove and return a random item.
+     *
+     * @return random item from <code>RandomizedQueue</code>.
+     * @throws NoSuchElementException if <code>RandomizedQueue</code> is empty.
+     */
+    public Item dequeue() {
+        if (isEmpty()) throw new NoSuchElementException("RandomizedQueue is empty!");
+        if (head > 0 && head == data.length / 4) resize(data.length / 2);
+
+        int random = StdRandom.uniform(head--);
+        Item item = data[random];
+
+        if (random == head) {
+            data[random] = null;
+            return item;
         }
 
-        int randomIndex = StdRandom.uniformInt(this.size);
-        return this.resizingArray[randomIndex];
+        data[random] = data[head];
+        data[head] = null;
+        return item;
+    }
+
+    /**
+     * Return a random item, but without removing it.
+     *
+     * @return random item from <code>RandomizedQueue</code>.
+     * @throws NoSuchElementException if <code>RandomizedQueue</code> is empty.
+     */
+    public Item sample() {
+        if (isEmpty()) throw new NoSuchElementException("RandomizedQueue is empty!");
+        return data[StdRandom.uniform(head)];
+    }
+
+    /**
+     * Returns an independent iterator over items in random order (With modern version of
+     * Fisher–Yates shuffle).
+     *
+     * @return an independent iterator over items in random order.
+     */
+    public Iterator<Item> iterator() {
+        return new Iterator<Item>() {
+            private Item[] shuffledData;
+            private int n = head;
+
+            {
+                shuffledData = (Item[]) new Object[data.length];
+                for (int i = 0; i < head; i++) {
+                    shuffledData[i] = data[i];
+                }
+            }
+
+            public boolean hasNext() {
+                return n > 0;
+            }
+
+            public Item next() {
+                if (!hasNext()) throw new NoSuchElementException("Iteration has no more elements!");
+
+                if (n == 1) {
+                    n = 0;
+                    return shuffledData[0];
+                }
+
+                int random = StdRandom.uniform(n);
+                Item result = shuffledData[random];
+                n--;
+
+                if (random == n)
+                    return result;
+
+                shuffledData[random] = shuffledData[n];
+                return result;
+            }
+        };
     }
 
     private void resize(int capacity) {
-        Item[] copy = (Item[]) new Object[capacity];
-        for (int i = 0; i < this.size; i++) {
-            copy[i] = this.resizingArray[i];
+        Item[] newArray = (Item[]) new Object[capacity];
+
+        for (int i = 0; i < head; i++) {
+            newArray[i] = data[i];
         }
-        this.resizingArray = copy;
+
+        data = newArray;
     }
-
-    public boolean isEmpty() { // is the randomized queue empty?
-        return this.size == 0;
-    }
-
-    public int size() { // return the number of items on the randomized queue
-        return this.size;
-    }
-
-    public Iterator<Item> iterator() {
-        return new RandomizedQueueIterator();
-    }
-
-    private class RandomizedQueueIterator implements Iterator<Item> {
-        private Item[] copy;
-        private int n;
-
-        public RandomizedQueueIterator() {
-            this.copy = resizingArray.clone();
-            n = size;
-            shuffle();
-        }
-
-        public void shuffle() { // shuffle to get random sequence
-            for (int i = 0; i < n; i++) {
-                int r = StdRandom.uniformInt(i + 1);
-                Item temp = this.copy[i];
-                this.copy[i] = this.copy[r];
-                this.copy[r] = temp;
-            }
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException("Deprecated method.");
-        }
-
-        public boolean hasNext() {
-            return n > 0;
-        }
-
-        public Item next() { // stack-pop like
-            if (this.n == 0) {
-                throw new NoSuchElementException("Empty");
-            }
-
-            Item toReturn = this.copy[--n];
-            return toReturn;
-        }
-    }
-
-    /* private class RandomizedQueueIterator implements Iterator<Item> {
-        private Node curr = head;
-
-        public void remove() {
-            throw new UnsupportedOperationException("Deprecated method.");
-        }
-
-        public boolean hasNext() {
-            return curr.next != null;
-        }
-
-        public Item next() {
-            Item toReturn = curr.item;
-            curr = curr.next;
-            return toReturn;
-        }
-    }
-
-   private class Node {
-        Item items;
-        Node next;
-
-        Node(Item item) {
-            this.item = item;
-        }
-    }*/
 
     public static void main(String[] args) {
         RandomizedQueue<Integer> rdqueue = new RandomizedQueue<>();
