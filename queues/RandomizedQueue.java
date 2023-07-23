@@ -14,7 +14,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private int size;
     private Item[] resizingArray;
 
-    private RandomizedQueue() { // construct an empty randomized queue
+    public RandomizedQueue() { // construct an empty randomized queue
         this.resizingArray = (Item[]) new Object[1];
         this.size = 0;
     }
