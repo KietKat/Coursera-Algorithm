@@ -118,11 +118,11 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         public boolean hasNext() {
-            return curr.next != null;
+            return curr != null;
         }
 
         public Item next() {
-            if (curr == null) {
+            if (!hasNext()) {
                 throw new NoSuchElementException();
             }
 

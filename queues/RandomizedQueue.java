@@ -61,7 +61,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (isEmpty()) throw new NoSuchElementException("RandomizedQueue is empty!");
         if (head > 0 && head == data.length / 4) resize(data.length / 2);
 
-        int random = StdRandom.uniform(head--);
+        int random = StdRandom.uniformInt(head--);
         Item item = data[random];
 
         if (random == head) {
@@ -82,7 +82,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      */
     public Item sample() {
         if (isEmpty()) throw new NoSuchElementException("RandomizedQueue is empty!");
-        return data[StdRandom.uniform(head)];
+        return data[StdRandom.uniformInt(head)];
     }
 
     /**
@@ -92,40 +92,42 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      * @return an independent iterator over items in random order.
      */
     public Iterator<Item> iterator() {
-        return new Iterator<Item>() {
-            private Item[] shuffledData;
-            private int n = head;
+        return new RandomizedQueueIterator();
+    }
 
-            {
-                shuffledData = (Item[]) new Object[data.length];
-                for (int i = 0; i < head; i++) {
-                    shuffledData[i] = data[i];
-                }
+    private class RandomizedQueueIterator implements Iterator<Item> {
+        private Item[] shuffledData;
+        private int n = head;
+
+        private RandomizedQueueIterator() {
+            shuffledData = (Item[]) new Object[data.length];
+            for (int i = 0; i < head; i++) {
+                shuffledData[i] = data[i];
+            }
+        }
+
+        public boolean hasNext() {
+            return n > 0;
+        }
+
+        public Item next() {
+            if (!hasNext()) throw new NoSuchElementException("Iteration has no more elements!");
+
+            if (n == 1) {
+                n = 0;
+                return shuffledData[0];
             }
 
-            public boolean hasNext() {
-                return n > 0;
-            }
+            int random = StdRandom.uniformInt(n);
+            Item result = shuffledData[random];
+            n--;
 
-            public Item next() {
-                if (!hasNext()) throw new NoSuchElementException("Iteration has no more elements!");
-
-                if (n == 1) {
-                    n = 0;
-                    return shuffledData[0];
-                }
-
-                int random = StdRandom.uniform(n);
-                Item result = shuffledData[random];
-                n--;
-
-                if (random == n)
-                    return result;
-
-                shuffledData[random] = shuffledData[n];
+            if (random == n)
                 return result;
-            }
-        };
+
+            shuffledData[random] = shuffledData[n];
+            return result;
+        }
     }
 
     private void resize(int capacity) {
