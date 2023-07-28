@@ -36,53 +36,36 @@ public class FastCollinearPoints {
         return lineSegments.toArray(new LineSegment[lineSegments.size()]);
     }
 
-    /*
-        Create LineSegment[] totalSegment to store line segment
-        For each point[i]:
-            Create a clone[] for points, from points[i+1] to end
-            Sort clone[] bySlope to point[i]
-            currentSegmentSize is 2
-            for j = 1 : clone.length:
-                if slope([j-1] = j[j]
-                    currentSegmentSize++
-                else
-                    if currentSize >= 4:
-                        add to total segment
-                    reset currentSegmentSize = 2
-            if (currentSegmentSize >= 4)
-                add to totalSegmentSize (startPoint,lastPoint)
-
-            Add everything to this.lineSegment of size segmentCount;
-
+    /* @param points is a clone of the imp
+        for each points[i] (Til points.length-3 because beyond that, no combination satisfy)
+            sort(points) to get it in right order
+            - critical bc we need this to determine an order of points from smallest to biggest
+            - no duplicate or subsegment
+            sort by slope of each points[i]
+            for loop (2 pointer DP) start & end:
+                increment end until slope(points[i]) to slope(points[end]) is not the same
+                if (end-start >=3 and points[start] > points[end])
+                    we have a line segment!
+                update start = end to find new lineSegment :)
     */
     private void analyzeSegment(Point[] points) {
-        Point[] pointCopy = points.clone();
+        for (int i = 0; i < points.length - 3; i++) {
+            Arrays.sort(points);
+            Arrays.sort(points, points[i].slopeOrder());
 
-        for (int i = 0; i < pointCopy.length - 3; i++) {
-            Arrays.sort(pointCopy);
-
-            // Sort the points according to the slopes they makes with p.
-            // Check if any 3 (or more) adjacent points in the sorted order
-            // have equal slopes with respect to p. If so, these points,
-            // together with p, are collinear.
-
-            Arrays.sort(pointCopy, pointCopy[i].slopeOrder());
-
-            for (int p = 0, first = 1, last = 2; last < pointCopy.length; last++) {
-                // find last collinear to p point
-                while (last < pointCopy.length
-                        && Double.compare(pointCopy[p].slopeTo(pointCopy[first]),
-                                          pointCopy[p].slopeTo(pointCopy[last])) == 0) {
-                    last++;
+            for (int start = 1, end = 2; end < points.length; end++) {
+                while (end < points.length &&
+                        Double.compare(points[i].slopeTo(points[start]),
+                                       points[i].slopeTo(points[end])) == 0) {
+                    end++;
                 }
-                // if found at least 3 elements, make segment if it's unique
-                if (last - first >= 3 && pointCopy[p].compareTo(pointCopy[first]) < 0) {
-                    lineSegments.add(new LineSegment(pointCopy[p], pointCopy[last - 1]));
+                if (end - start >= 3 && points[start].compareTo(points[i]) > 0) {
+                    lineSegments.add(new LineSegment(points[i], points[end - 1]));
                 }
-                // Try to find next
-                first = last;
+                start = end;
             }
         }
+
     }
 
     public static void main(String[] args) {
