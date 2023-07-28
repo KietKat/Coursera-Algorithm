@@ -4,7 +4,11 @@
  *  Description:
  ******************************************************************************/
 
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
+
+import java.util.Arrays;
 
 public class BruteCollinearPoints {
     private int seg;
@@ -25,7 +29,7 @@ public class BruteCollinearPoints {
             }
         }
 
-        analyzeSegment(points);
+        analyzeSegment(points.clone());
     }
 
     public int numberOfSegments() {
@@ -35,6 +39,7 @@ public class BruteCollinearPoints {
     private void analyzeSegment(Point[] points) {
         // max number of line segments of n points is n choose 4, or n*(n-1)/2
         LineSegment[] tmpSegments = new LineSegment[6];
+        Arrays.sort(points);
         for (int i = 0; i < points.length; i++) {
             for (int j = i + 1; j < points.length; j++) {
                 for (int k = j + 1; k < points.length; k++) {
@@ -62,32 +67,31 @@ public class BruteCollinearPoints {
     }
 
     public static void main(String[] args) {
-        // check co-linearity
-        Point[] arr1 = new Point[4];
+        // read the n points from a file
+        In in = new In(args[0]);
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
 
-        arr1[0] = new Point(0, 0);
-        arr1[1] = new Point(1, 1);
-        arr1[2] = new Point(2, 2);
-        arr1[3] = new Point(3, 3);
+        // draw the points
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
+        for (Point p : points) {
+            p.draw();
+        }
+        StdDraw.show();
 
-        BruteCollinearPoints bf1 = new BruteCollinearPoints(arr1);
-        LineSegment[] ls1 = bf1.segments();
-
-        for (int i = 0; i < ls1.length; i++) StdOut.println(ls1[i].toString());
-
-        // check non co-linearity
-        Point[] arr2 = new Point[4];
-
-        arr2[0] = new Point(0, 9);
-        arr2[1] = new Point(1, 1);
-        arr2[2] = new Point(4, 2);
-        arr2[3] = new Point(-9, 3);
-
-        BruteCollinearPoints bf2 = new BruteCollinearPoints(arr2);
-        LineSegment[] ls2 = bf2.segments();
-
-        for (int i = 0; i < ls2.length; i++) StdOut.println(ls2[i].toString());
-
-
+        // print and draw the line segments
+        BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+        for (LineSegment segment : collinear.segments()) {
+            StdOut.println(segment);
+            segment.draw();
+        }
+        StdDraw.show();
     }
 }

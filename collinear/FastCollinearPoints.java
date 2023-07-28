@@ -29,6 +29,7 @@ public class FastCollinearPoints {
                     throw new IllegalArgumentException("Duplicate Elements");
             }
         }
+        analyzeSegment(points.clone());
         this.segmentCount = 0;
     }
 
