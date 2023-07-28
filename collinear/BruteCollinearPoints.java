@@ -88,12 +88,6 @@ public class BruteCollinearPoints {
 
         for (int i = 0; i < ls2.length; i++) StdOut.println(ls2[i].toString());
 
-        // check exception
-        Point[] arr3 = new Point[4];
-        arr3[0] = new Point(0, 0);
-        arr3[1] = new Point(2, 2);
-        arr3[2] = new Point(2, 2);
-        arr3[3] = new Point(3, 3);
-        BruteCollinearPoints bf3 = new BruteCollinearPoints(arr3);
+
     }
 }
