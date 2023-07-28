@@ -4,15 +4,11 @@
  *  Description:
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdOut;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FastCollinearPoints {
-    private int segmentCount;
-    private LineSegment[] lineSegments;
+    private final ArrayList<LineSegment> lineSegments = new ArrayList<>();
 
     public FastCollinearPoints(Point[] points) { // finds all line segments
         // bestie check :)
@@ -30,15 +26,14 @@ public class FastCollinearPoints {
             }
         }
         analyzeSegment(points.clone());
-        this.segmentCount = 0;
     }
 
     public int numberOfSegments() {
-        return segmentCount;
+        return lineSegments.size();
     }
 
     public LineSegment[] segments() {
-        return lineSegments.clone();
+        return lineSegments.toArray(new LineSegment[lineSegments.size()]);
     }
 
     /*
@@ -61,75 +56,37 @@ public class FastCollinearPoints {
 
     */
     private void analyzeSegment(Point[] points) {
-        int arrSize = points.length;
-        LineSegment[] totalSeg = new LineSegment[4 * arrSize];
-        Arrays.sort(points);
-        Point[] copyPoints;
+        Point[] pointCopy = points.clone();
 
-        // O(n)
-        for (int i = 0; i < arrSize; i++) {
-            int copySize = arrSize - i - 1;
-            Point startPoint = points[i];
-            copyPoints = new Point[copySize];
-            System.arraycopy(points, i + 1, copyPoints, 0, copySize);
+        for (int i = 0; i < pointCopy.length - 3; i++) {
+            Arrays.sort(pointCopy);
 
-            // O(NlgN)
-            Arrays.sort(copyPoints, startPoint.slopeOrder());
+            // Sort the points according to the slopes they makes with p.
+            // Check if any 3 (or more) adjacent points in the sorted order
+            // have equal slopes with respect to p. If so, these points,
+            // together with p, are collinear.
 
-            int segmentSize = 2;
-            // O(N)
-            for (int j = 1; j < copySize; j++) {
-                if (Double.compare(startPoint.slopeTo(copyPoints[j]),
-                                   startPoint.slopeTo(copyPoints[j - 1])) == 0) {
-                    segmentSize++;
+            Arrays.sort(pointCopy, pointCopy[i].slopeOrder());
+
+            for (int p = 0, first = 1, last = 2; last < pointCopy.length; last++) {
+                // find last collinear to p point
+                while (last < pointCopy.length
+                        && Double.compare(pointCopy[p].slopeTo(pointCopy[first]),
+                                          pointCopy[p].slopeTo(pointCopy[last])) == 0) {
+                    last++;
                 }
-                else {
-                    if (segmentSize >= 4) {
-                        totalSeg[this.segmentCount++] =
-                                new LineSegment(startPoint, copyPoints[j - 1]);
-                    }
-                    segmentSize = 2;
+                // if found at least 3 elements, make segment if it's unique
+                if (last - first >= 3 && pointCopy[p].compareTo(pointCopy[first]) < 0) {
+                    lineSegments.add(new LineSegment(pointCopy[p], pointCopy[last - 1]));
                 }
+                // Try to find next
+                first = last;
             }
-
-            if (segmentSize >= 4) {
-                totalSeg[this.segmentCount++] =
-                        new LineSegment(startPoint, copyPoints[copyPoints.length - 1]);
-            }
-        }
-
-        this.lineSegments = new LineSegment[this.segmentCount];
-        for (int i = 0; i < this.segmentCount; i++) {
-            lineSegments[i] = totalSeg[i];
         }
     }
 
     public static void main(String[] args) {
-        // read the n points from a file
-        In in = new In(args[0]);
-        int n = in.readInt();
-        Point[] points = new Point[n];
-        for (int i = 0; i < n; i++) {
-            int x = in.readInt();
-            int y = in.readInt();
-            points[i] = new Point(x, y);
-        }
 
-        // draw the points
-        StdDraw.enableDoubleBuffering();
-        StdDraw.setXscale(0, 32768);
-        StdDraw.setYscale(0, 32768);
-        for (Point p : points) {
-            p.draw();
-        }
-        StdDraw.show();
 
-        // print and draw the line segments
-        FastCollinearPoints collinear = new FastCollinearPoints(points);
-        for (LineSegment segment : collinear.segments()) {
-            StdOut.println(segment);
-            segment.draw();
-        }
-        StdDraw.show();
     }
 }

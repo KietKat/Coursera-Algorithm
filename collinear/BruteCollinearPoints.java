@@ -38,7 +38,7 @@ public class BruteCollinearPoints {
 
     private void analyzeSegment(Point[] points) {
         // max number of line segments of n points is n choose 4, or n*(n-1)/2
-        LineSegment[] tmpSegments = new LineSegment[6];
+        LineSegment[] tmpSegments = new LineSegment[points.length * 4];
         Arrays.sort(points);
         for (int i = 0; i < points.length; i++) {
             for (int j = i + 1; j < points.length; j++) {
