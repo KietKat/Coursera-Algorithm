@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c1e4f978-b3bd-4ae1-84e9-9e1170bce808" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FastCollinearPoints.java" beforeDir="false" afterPath="$PROJECT_DIR$/FastCollinearPoints.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/collinear.zip" beforeDir="false" afterPath="$PROJECT_DIR$/collinear.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../percolation/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../percolation/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../percolation/Percolation.class" beforeDir="false" afterPath="$PROJECT_DIR$/../percolation/Percolation.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../percolation/PercolationStats.class" beforeDir="false" afterPath="$PROJECT_DIR$/../percolation/PercolationStats.class" afterDir="false" />
