@@ -1,1 +1,1 @@
-# MIT-Algorithm
+# Coursera-Algorithm
