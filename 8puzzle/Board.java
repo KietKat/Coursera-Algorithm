@@ -145,6 +145,7 @@ public class Board {
         int temp = clone[fromX][fromY];
         clone[fromX][fromY] = clone[toX][toY];
         clone[toX][toY] = temp;
+
         return new Board(clone);
     }
 
@@ -165,7 +166,7 @@ public class Board {
         else {
             swapToY = this.zeroY - 1;
         }
-        return swap(swapToX, swapToY, this.zeroY, swapToX);
+        return swap(swapToX, swapToX, this.zeroY, swapToY);
     }
 
     public static void main(String[] args) {

@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Solver {
-    private Board initialBoard;
+    private Board initialBoard; // welp can totally delete this
 
     private List<Board> solution;
 
@@ -43,7 +43,7 @@ public class Solver {
          *     Board can achieve goal by alternating its twin
          * Since only one of them can appear, "current" will trace if board is type 1,
          * twin will trace if board is type 2.
-         * We use the same path for both board. If twin can achieve the goal first regardless,
+         * If twin can achieve the goal first regardless,
          * we can conclude that current is not solvable :)
          */
 
@@ -79,7 +79,7 @@ public class Solver {
 
         // adding the boards to solution by using previous
         if (current.board.isGoal() && !twin.board.isGoal()) {
-            while (current.previous != null) {
+            while (current != null) {
                 this.solution.add(current.board);
                 current = current.previous;
             }
@@ -110,7 +110,7 @@ public class Solver {
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        if (this.solution.size() == 0) return -1;
+        if (this.solution.isEmpty()) return -1;
         return this.solution.size() - 1;
     }
 
@@ -122,11 +122,11 @@ public class Solver {
 
     // sequence of boards in the shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        if (this.solution.size() == 0) return null;
+        if (this.solution.isEmpty()) return null;
 
         List<Board> returnSolution = new ArrayList<>();
-        for (int i = 0; i < this.solution.size(); i++) {
-            returnSolution.add(this.solution.get(i));
+        for (Board sol : this.solution) {
+            returnSolution.add(sol);
         }
 
         return returnSolution;
